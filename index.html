@@ -1,0 +1,681 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel spam đa nền tảng cho Zalo, Messenger, Discord, và 30 ứng dụng khác, phát triển bởi Ng Quang Huy.">
+  <meta property="og:title" content="Spam Panel by Ng Quang Huy">
+  <meta property="og:description" content="Panel spam đa nền tảng cho Zalo, Messenger, Discord, và nhiều ứng dụng khác, phát triển bởi Ng Quang Huy.">
+  <meta property="og:image" content="https://i.imgur.com/ao0Jo6W.jpeg">
+  <meta property="og:url" content="https://example.com">
+  <title>Spam Panel by Ng Quang Huy</title>
+  <link rel="icon" type="image/jpeg" href="https://i.imgur.com/ao0Jo6W.jpeg">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/ao0Jo6W.jpeg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('https://i.imgur.com/k3rvrAu.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.5s ease;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(0, 183, 235, 0.3), rgba(0, 255, 136, 0.3), rgba(255, 69, 0, 0.3));
+      background-size: 300% 300%;
+      animation: gradientShift 20s ease infinite;
+      z-index: -1;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: #fff;
+      font-size: calc(0.8em + 0.4 * Math.random());
+      opacity: 0.7;
+      pointer-events: none;
+      animation: fall calc(5s + 3s * Math.random()) linear infinite;
+      z-index: 10;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10vh); opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    .glassmorphic {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(30px);
+      border: 3px solid transparent;
+      border-image: linear-gradient(135deg, #00b7eb, #ff4500) 1;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+    .rainbow-text {
+      background: linear-gradient(90deg, #00b7eb, #00ff88, #ff4500, #ffd700);
+      background-size: 400% 100%;
+      animation: rainbow 5s infinite linear;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(0, 183, 235, 0.8);
+    }
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 400% 50%; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 30px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      display: none;
+      animation: slideInRight 0.5s ease-in-out;
+      z-index: 1000;
+    }
+    .notification.success {
+      background: #4CAF50;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.6);
+    }
+    .notification.error {
+      background: #e74c3c;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.6);
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 80px;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      z-index: 100;
+    }
+    .sidebar-btn {
+      color: #fff;
+      font-size: 1.5rem;
+      margin: 15px 0;
+      cursor: pointer;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .sidebar-btn:hover {
+      transform: scale(1.2);
+      color: #00ff88;
+    }
+    .sidebar-btn.active {
+      color: #ffd700;
+      transform: scale(1.2);
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 183, 235, 0.5);
+    }
+    .log-box {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Roboto', sans-serif;
+      color: #e0e0e0;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    .modal-content {
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      border: 2px solid transparent;
+      border-image: linear-gradient(135deg, #00b7eb, #ff4500) 1;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      border-radius: 16px;
+      max-width: 600px;
+      margin: 10% auto;
+      padding: 20px;
+    }
+    .control-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .control-btn:hover::after {
+      opacity: 1;
+    }
+    body.dark-mode {
+      background: url('https://i.imgur.com/k3rvrAu.jpeg') no-repeat center center fixed, #1a1a1a;
+      background-size: cover;
+    }
+    body.dark-mode .glassmorphic {
+      background: rgba(30, 30, 30, 0.9);
+    }
+    @media (max-width: 640px) {
+      .sidebar { width: 60px; }
+      .sidebar-btn { font-size: 1.2rem; margin: 10px 0; }
+      .container { width: 95%; padding: 1.5rem; margin: 3rem auto; }
+      .logo { width: 100px; height: 100px; }
+      h1 { font-size: 2rem; }
+      .notification { top: 15px; right: 15px; padding: 12px 20px; font-size: 0.9rem; }
+      .controls { flex-direction: column; gap: 8px; left: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="sidebar">
+    <div class="sidebar-btn active" onclick="selectApp('messenger')" title="Messenger" aria-label="Messenger"><i class="fab fa-facebook-messenger"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('zalo')" title="Zalo" aria-label="Zalo"><i class="fas fa-comment-alt"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('discord')" title="Discord" aria-label="Discord"><i class="fab fa-discord"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('telegram')" title="Telegram" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('tiktok')" title="TikTok" aria-label="TikTok"><i class="fab fa-tiktok"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('youtube')" title="YouTube" aria-label="YouTube"><i class="fab fa-youtube"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('gmail')" title="Gmail" aria-label="Gmail"><i class="fas fa-envelope"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('wechat')" title="WeChat" aria-label="WeChat"><i class="fab fa-weixin"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('skype')" title="Skype" aria-label="Skype"><i class="fab fa-skype"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('instagram')" title="Instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('roblox')" title="Roblox" aria-label="Roblox"><i class="fas fa-gamepad"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('capcut')" title="CapCut" aria-label="CapCut"><i class="fas fa-video"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('x')" title="X" aria-label="X"><i class="fab fa-twitter"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('snapchat')" title="Snapchat" aria-label="Snapchat"><i class="fab fa-snapchat-ghost"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('whatsapp')" title="WhatsApp" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('googlemaps')" title="Google Maps" aria-label="Google Maps"><i class="fas fa-map-marked-alt"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('lienquan')" title="Liên Quân" aria-label="Liên Quân"><i class="fas fa-shield-alt"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('freefire')" title="Free Fire" aria-label="Free Fire"><i class="fas fa-fire"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('minecraft')" title="Minecraft" aria-label="Minecraft"><i class="fas fa-cube"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('gtav')" title="GTA V" aria-label="GTA V"><i class="fas fa-car"></i></div>
+    <div class="sidebar-btn" onclick="selectApp('ngl')" title="NGL" aria-label="NGL"><i class="fas fa-question-circle"></i></div>
+  </div>
+
+  <div class="controls fixed top-4 left-20 flex gap-3 z-[1000]">
+    <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="toggleTheme()" data-tooltip="Chuyển đổi sáng/tối" aria-label="Chuyển đổi giao diện sáng/tối">
+      <i class="fas fa-moon text-white"></i>
+    </div>
+    <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="toggleMusic()" data-tooltip="Bật/tắt nhạc nền" aria-label="Bật/tắt nhạc nền">
+      <i class="fas fa-music text-white"></i>
+    </div>
+    <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="toggleSound()" data-tooltip="Bật/tắt âm thanh nút" aria-label="Bật/tắt âm thanh nút">
+      <i class="fas fa-volume-up text-white"></i>
+    </div>
+    <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="toggleSnowflakes()" data-tooltip="Bật/tắt tuyết rơi" aria-label="Bật/tắt tuyết rơi">
+      <i class="fas fa-snowflake text-white"></i>
+    </div>
+    <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="logout()" data-tooltip="Đăng xuất" aria-label="Đăng xuất">
+      <i class="fas fa-sign-out-alt text-white"></i>
+    </div>
+  </div>
+
+  <div class="container glassmorphic rounded-3xl mx-auto p-8 w-11/12 max-w-6xl my-16 ml-24 transition-transform hover:scale-105">
+    <img src="https://i.imgur.com/iA8VuqJ.jpeg" alt="Panel Logo" class="logo w-32 h-32 rounded-full border-4 border-white shadow-xl mx-auto mb-6 transition-transform hover:scale-110 hover:rotate-12 hover:shadow-2xl">
+    <h1 class="text-4xl font-bold text-center rainbow-text animate-pulse mb-8">SPAM PANEL BY NG QUANG HUY</h1>
+
+    <div id="app-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Function cards will be dynamically populated -->
+    </div>
+
+    <div class="social-links text-center mt-6">
+      <span class="text-gray-200">Created by </span>
+      <a href="https://www.facebook.com/share/1Au4mhxM48/" target="_blank" class="text-cyan-400 hover:text-green-400 transition-colors">Ng Quang Huy</a>
+      <span class="text-gray-200"> | </span>
+      <a href="mailto: ngquanghuy3027@gmail.com" class="text-cyan-400 hover:text-green-400 transition-colors">Liên hệ</a>
+    </div>
+  </div>
+
+  <div id="function-modal" class="modal">
+    <div class="modal-content">
+      <h2 id="modal-title" class="text-2xl font-bold text-center text-cyan-400 mb-4"></h2>
+      <div id="modal-form" class="grid grid-cols-1 gap-4">
+        <div>
+          <label for="credential" class="block text-lg font-roboto mb-2">Thông tin xác thực (Cookie/Token)</label>
+          <input id="credential" type="text" class="w-full bg-white/15 text-white p-3 rounded-xl border border-white/40 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 outline-none transition-all" placeholder="Nhập cookie hoặc token" aria-label="Thông tin xác thực">
+        </div>
+        <div>
+          <label for="target" class="block text-lg font-roboto mb-2">ID mục tiêu (Group/Channel/ID)</label>
+          <input id="target" type="text" class="w-full bg-white/15 text-white p-3 rounded-xl border border-white/40 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 outline-none transition-all" placeholder="Nhập ID nhóm hoặc kênh" aria-label="ID mục tiêu">
+        </div>
+        <div id="content-field">
+          <label for="content-file" class="block text-lg font-roboto mb-2">File nội dung (.txt)</label>
+          <input id="content-file" type="file" accept=".txt" class="w-full bg-white/15 text-white p-3 rounded-xl border border-white/40 file:bg-gradient-to-r file:from-cyan-500 file:to-green-500 file:text-white file:font-patrick file:rounded-xl file:border-none file:p-2 file:cursor-pointer" aria-label="File nội dung">
+        </div>
+        <div id="image-field" class="hidden">
+          <label for="image-file" class="block text-lg font-roboto mb-2">File ảnh (.jpg)</label>
+          <input id="image-file" type="file" accept=".jpg,.jpeg" class="w-full bg-white/15 text-white p-3 rounded-xl border border-white/40 file:bg-gradient-to-r file:from-orange-500 file:to-yellow-500 file:text-white file:font-patrick file:rounded-xl file:border-none file:p-2 file:cursor-pointer" aria-label="File ảnh">
+        </div>
+        <div>
+          <label for="delay" class="block text-lg font-roboto mb-2">Thời gian delay (giây)</label>
+          <input id="delay" type="number" min="0" step="0.1" class="w-full bg-white/15 text-white p-3 rounded-xl border border-white/40 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 outline-none transition-all" placeholder="Nhập thời gian delay" aria-label="Thời gian delay">
+        </div>
+      </div>
+      <div class="log-box mt-4">
+        <p>Nhật ký hoạt động sẽ hiển thị ở đây...</p>
+      </div>
+      <div class="flex gap-4 mt-4">
+        <button class="flex-1 bg-gray-500 text-white font-patrick text-lg py-3 rounded-xl hover:bg-gray-600 transition-all" onclick="closeModal()" aria-label="Đóng">Đóng</button>
+        <button id="start-btn" class="flex-1 bg-gradient-to-r from-cyan-500 to-green-500 text-white font-patrick text-lg py-3 rounded-xl hover:from-green-500 hover:to-cyan-500 transition-all" onclick="startSpam()" aria-label="Bắt đầu gửi">Bắt đầu gửi</button>
+        <button id="stop-btn" class="flex-1 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-patrick text-lg py-3 rounded-xl hover:from-yellow-500 hover:to-orange-500 transition-all" onclick="stopSpam()" aria-label="Dừng gửi" disabled>Dừng gửi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2023/03/29/14-44-22-360_2023-03-29-14-44-22-360.mp3" type="audio/mp3">
+  </audio>
+  <audio id="click-sound">
+    <source src="https://www.freesound.org/data/previews/316/316847_5121236-lq.mp3" type="audio/mp3">
+  </audio>
+  <audio id="theme-sound">
+    <source src="https://www.freesound.org/data/previews/316/316848_5121236-lq.mp3" type="audio/mp3">
+  </audio>
+
+  <footer class="fixed bottom-0 w-full bg-black/75 backdrop-blur-lg py-4 text-center text-gray-200 font-roboto border-t border-white/20">
+    2025 Copyright Spam Panel by <span class="text-orange-500 font-bold">Ng Quang Huy</span>
+  </footer>
+
+  <script>
+    const apps = {
+      messenger: { name: 'Messenger', icon: 'fab fa-facebook-messenger', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      zalo: { name: 'Zalo', icon: 'fas fa-comment-alt', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      discord: { name: 'Discord', icon: 'fab fa-discord', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      telegram: { name: 'Telegram', icon: 'fab fa-telegram-plane', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'API Key' },
+      tiktok: { name: 'TikTok', icon: 'fab fa-tiktok', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      youtube: { name: 'YouTube', icon: 'fab fa-youtube', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'API Key' },
+      gmail: { name: 'Gmail', icon: 'fas fa-envelope', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Access Token' },
+      wechat: { name: 'WeChat', icon: 'fab fa-weixin', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      skype: { name: 'Skype', icon: 'fab fa-skype', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      instagram: { name: 'Instagram', icon: 'fab fa-instagram', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      roblox: { name: 'Roblox', icon: 'fas fa-gamepad', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      capcut: { name: 'CapCut', icon: 'fas fa-video', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      x: { name: 'X', icon: 'fab fa-twitter', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'API Key' },
+      snapchat: { name: 'Snapchat', icon: 'fab fa-snapchat-ghost', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      whatsapp: { name: 'WhatsApp', icon: 'fab fa-whatsapp', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      googlemaps: { name: 'Google Maps', icon: 'fas fa-map-marked-alt', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'API Key' },
+      lienquan: { name: 'Liên Quân', icon: 'fas fa-shield-alt', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      freefire: { name: 'Free Fire', icon: 'fas fa-fire', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      minecraft: { name: 'Minecraft', icon: 'fas fa-cube', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      gtav: { name: 'GTA V', icon: 'fas fa-car', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      ngl: { name: 'NGL', icon: 'fas fa-question-circle', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' }
+    };
+
+    let isMusicEnabled = true;
+    let isSoundEnabled = true;
+    let isSnowflakesEnabled = true;
+    let snowflakeInterval;
+    let spamInterval;
+    let currentApp = 'messenger';
+    let currentFunction = '';
+
+    function showNotification(message, type) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
+      setTimeout(() => notification.style.display = 'none', 3000);
+    }
+
+    function playSound(soundId) {
+      if (!isSoundEnabled) return;
+      const sound = document.getElementById(soundId);
+      sound.volume = 0.5;
+      sound.currentTime = 0;
+      sound.play().catch(() => console.log('Sound playback blocked'));
+    }
+
+    function toggleMusic() {
+      playSound('theme-sound');
+      const music = document.getElementById('bg-music');
+      const icon = document.querySelector('.control-btn:nth-child(2) i');
+      isMusicEnabled = !isMusicEnabled;
+      if (isMusicEnabled) {
+        music.play().catch(() => console.log('Music playback blocked'));
+        icon.classList.replace('fa-music-slash', 'fa-music');
+        showNotification('Đã bật nhạc nền', 'success');
+      } else {
+        music.pause();
+        icon.classList.replace('fa-music', 'fa-music-slash');
+        showNotification('Đã tắt nhạc nền', 'success');
+      }
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const icon = document.querySelector('.control-btn:nth-child(3) i');
+      if (isSoundEnabled) {
+        icon.classList.replace('fa-volume-mute', 'fa-volume-up');
+        showNotification('Đã bật âm thanh nút', 'success');
+      } else {
+        icon.classList.replace('fa-volume-up', 'fa-volume-mute');
+        showNotification('Đã tắt âm thanh nút', 'success');
+      }
+    }
+
+    function toggleSnowflakes() {
+      playSound('theme-sound');
+      isSnowflakesEnabled = !isSnowflakesEnabled;
+      const icon = document.querySelector('.control-btn:nth-child(4) i');
+      if (isSnowflakesEnabled) {
+        startSnowflakes();
+        icon.classList.replace('fa-snowflake-o', 'fa-snowflake');
+        showNotification('Đã bật tuyết rơi', 'success');
+      } else {
+        clearInterval(snowflakeInterval);
+        document.querySelectorAll('.snowflake').forEach(s => s.remove());
+        icon.classList.replace('fa-snowflake', 'fa-snowflake-o');
+        showNotification('Đã tắt tuyết rơi', 'success');
+      }
+    }
+
+    function logout() {
+      playSound('click-sound');
+      localStorage.removeItem('isLoggedIn');
+      showNotification('Đã đăng xuất!', 'success');
+      setTimeout(() => window.location.href = 'login.html', 1000);
+    }
+
+    function createSnowflake() {
+      if (!isSnowflakesEnabled) return;
+      const snowflakes = document.querySelectorAll('.snowflake');
+      if (snowflakes.length > 50) return;
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.innerHTML = '❄️';
+      snowflake.style.left = Math.random() * window.innerWidth + 'px';
+      snowflake.style.animationDuration = Math.random() * 3 + 5 + 's';
+      snowflake.style.opacity = Math.random() * 0.4 + 0.5;
+      document.body.appendChild(snowflake);
+      setTimeout(() => snowflake.remove(), 10000);
+    }
+
+    function startSnowflakes() {
+      if (!isSnowflakesEnabled) return;
+      snowflakeInterval = setInterval(createSnowflake, 800);
+    }
+
+    function selectApp(app) {
+      playSound('click-sound');
+      currentApp = app;
+      document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.sidebar-btn[onclick="selectApp('${app}')"]`).classList.add('active');
+      renderFunctions();
+      showNotification(`Đã chọn ứng dụng: ${apps[app].name}`, 'success');
+    }
+
+    function renderFunctions() {
+      const content = document.getElementById('app-content');
+      content.innerHTML = '';
+      apps[currentApp].functions.forEach(func => {
+        const card = document.createElement('div');
+        card.className = 'card glassmorphic rounded-xl p-6 cursor-pointer';
+        card.innerHTML = `
+          <h3 class="text-xl font-bold text-cyan-400 mb-2">${func}</h3>
+          <p class="text-gray-200 font-roboto">${
+            func === 'Treo Ngôn' ? 'Gửi tin nhắn lặp lại từ file văn bản.' :
+            func === 'Treo Nhây' ? 'Gửi tin nhắn ngẫu nhiên từ danh sách.' :
+            func === 'Treo Sớ' ? 'Gửi văn bản dài từ file.' :
+            func === 'Treo Top' ? 'Gửi tin nhắn để đẩy bài viết lên đầu.' :
+            'Gửi tin nhắn kèm ảnh để đẩy bài viết.'
+          }</p>
+        `;
+        card.onclick = () => openFunctionModal(func);
+        content.appendChild(card);
+      });
+    }
+
+    function openFunctionModal(func) {
+      playSound('click-sound');
+      currentFunction = func;
+      document.getElementById('modal-title').textContent = `${func} - ${apps[currentApp].name}`;
+      document.getElementById('credential').placeholder = `Nhập ${apps[currentApp].credential.toLowerCase()}`;
+      document.getElementById('image-field').classList.toggle('hidden', func !== 'Treo Top Ảnh');
+      document.getElementById('content-field').classList.toggle('hidden', func === 'Treo Nhây');
+      document.querySelector('.log-box').innerHTML = '<p>Nhật ký hoạt động sẽ hiển thị ở đây...</p>';
+      document.getElementById('function-modal').style.display = 'block';
+    }
+
+    function closeModal() {
+      playSound('click-sound');
+      stopSpam();
+      document.getElementById('function-modal').style.display = 'none';
+    }
+
+    async function startSpam() {
+      playSound('click-sound');
+      const credential = document.getElementById('credential').value.trim();
+      const target = document.getElementById('target').value.trim();
+      const contentFile = document.getElementById('content-file').files[0];
+      const imageFile = document.getElementById('image-file').files[0];
+      const delay = parseFloat(document.getElementById('delay').value);
+
+      if (!credential) return showNotification(`${apps[currentApp].credential} không được để trống!`, 'error');
+      if (!target) return showNotification('ID mục tiêu không được để trống!', 'error');
+      if (currentFunction !== 'Treo Nhây' && !contentFile) return showNotification('Vui lòng chọn file nội dung (.txt)!', 'error');
+      if (isNaN(delay) || delay < 0) return showNotification('Thời gian delay không hợp lệ!', 'error');
+      if (currentFunction === 'Treo Top Ảnh' && imageFile && !imageFile.name.toLowerCase().endsWith('.jpg') && !imageFile.name.toLowerCase().endsWith('.jpeg')) {
+        return showNotification('File ảnh phải có định dạng JPG!', 'error');
+      }
+
+      const logBox = document.querySelector('.modal-content .log-box');
+      logBox.innerHTML = '';
+
+      let content = currentFunction === 'Treo Nhây' ? ['Sample nhây message'] : null;
+      if (currentFunction !== 'Treo Nhây') {
+        try {
+          content = await contentFile.text();
+          if (!content.trim()) return showNotification('File nội dung rỗng!', 'error');
+        } catch (e) {
+          return showNotification('Lỗi đọc file nội dung!', 'error');
+        }
+      }
+
+      document.getElementById('start-btn').disabled = true;
+      document.getElementById('stop-btn').disabled = false;
+
+      const log = (message, type = 'info') => {
+        const p = document.createElement('p');
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        p.className = type === 'success' ? 'text-green-400' : type === 'error' ? 'text-red-400' : 'text-gray-200';
+        logBox.appendChild(p);
+        logBox.scrollTop = logBox.scrollHeight;
+      };
+
+      log(`Bắt đầu ${currentFunction.toLowerCase()} trên ${apps[currentApp].name} đến: ${target}`);
+      showNotification('Bắt đầu gửi...', 'success');
+
+      if (currentFunction === 'Treo Top Ảnh' && imageFile) {
+        log('Đang gửi ảnh...');
+        try {
+          const formData = new FormData();
+          formData.append('file', imageFile);
+          formData.append('credential', credential);
+          // Simulate image upload
+          const uploadResponse = await fetch(`/api/${currentApp}/upload_image`, {
+            method: 'POST',
+            body: formData
+          });
+          if (uploadResponse.ok) {
+            log('Ảnh đã gửi thành công!', 'success');
+          } else {
+            log(`Gửi ảnh thất bại: ${uploadResponse.status}`, 'error');
+            throw new Error('Image upload failed');
+          }
+        } catch (e) {
+          log(`Lỗi gửi ảnh: ${e.message}`, 'error');
+          stopSpam();
+          return;
+        }
+      }
+
+      const sendMessage = async () => {
+        try {
+          const payload = {
+            body: currentFunction === 'Treo Nhây' ? content[Math.floor(Math.random() * content.length)] : content,
+            target,
+            timestamp: Date.now()
+          };
+
+          // Simulate message send
+          const response = await fetch(`/api/${currentApp}/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential, payload })
+          });
+
+          if (response.ok) {
+            log(`${currentFunction} thành công!`, 'success');
+          } else {
+            log(`${currentFunction} thất bại: ${response.status}`, 'error');
+          }
+        } catch (e) {
+          log(`Lỗi ${currentFunction.toLowerCase()}: ${e.message}`, 'error');
+        }
+      };
+
+      spamInterval = setInterval(sendMessage, delay * 1000);
+      sendMessage();
+    }
+
+    function stopSpam() {
+      playSound('click-sound');
+      clearInterval(spamInterval);
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('stop-btn').disabled = true;
+      showNotification('Đã dừng gửi!', 'success');
+      const logBox = document.querySelector('.modal-content .log-box');
+      logBox.innerHTML += `<p class="text-gray-200">[${new Date().toLocaleTimeString()}] Đã dừng gửi</p>`;
+    }
+
+    function toggleTheme() {
+      playSound('theme-sound');
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.controls .control-btn:nth-child(1) i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('isLoggedIn')) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      startSnowflakes();
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.controls .control-btn:nth-child(1) i').classList.replace('fa-moon', 'fa-sun');
+      }
+      document.getElementById('bg-music').volume = 0.3;
+      document.getElementById('bg-music').play().catch(() => console.log('Autoplay blocked'));
+      renderFunctions();
+
+      const container = document.querySelector('.container');
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const tiltX = (y / rect.height) * 12;
+        const tiltY = -(x / rect.width) * 12;
+        container.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.03)`;
+      });
+      container.addEventListener('mouseleave', () => {
+        container.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+
+      document.getElementById('credential').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSpam();
+      });
+      document.getElementById('target').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSpam();
+      });
+      document.getElementById('delay').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSpam();
+      });
+    });
+  </script>

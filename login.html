@@ -1,0 +1,596 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Đăng nhập vào Spam Panel để sử dụng công cụ spam đa nền tảng, phát triển bởi Ng Quang Huy.">
+  <meta property="og:title" content="Đăng nhập Spam Panel">
+  <meta property="og:description" content="Đăng nhập vào Spam Panel để sử dụng công cụ spam đa nền tảng, phát triển bởi Ng Quang Huy.">
+  <meta property="og:image" content="https://i.imgur.com/ao0Jo6W.jpeg">
+  <meta property="og:url" content="https://example.com">
+  <title>Đăng nhập - Spam Panel</title>
+  <link rel="icon" type="image/jpeg" href="https://i.imgur.com/ao0Jo6W.jpeg">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/ao0Jo6W.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-dark: #0d1b2a;
+      --bg-light: #1b263b;
+      --neon-cyan: #00d4ff;
+      --neon-magenta: #ff007a;
+      --text-light: #f5f7fa;
+      --accent-gold: #ffd700;
+      --bubble-purple: #8b00ff;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      background-image: url('https://i.imgur.com/k3rvrAu.jpeg');
+      background-size: cover;
+      min-height: 100vh;
+      color: var(--text-light);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .bubble {
+      position: fixed;
+      bottom: 0;
+      width: calc(5px + 10px * var(--random-size));
+      height: calc(5px + 10px * var(--random-size));
+      background: var(--bubble-color);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatBubble calc(8s + 4s * var(--random-duration)) linear forwards, sparkle 1s ease-in-out infinite;
+      z-index: 5;
+    }
+    @keyframes floatBubble {
+      0% {
+        transform: translateY(0) translateX(calc(-50px + 100px * var(--random-x)));
+        opacity: 0.8;
+        scale: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(calc(-50px + 100px * var(--random-x)));
+        opacity: 0;
+        scale: 0.2;
+      }
+    }
+    @keyframes sparkle {
+      0%, 100% { box-shadow: 0 0 5px var(--bubble-color), 0 0 10px rgba(255, 255, 255, 0.5); }
+      50% { box-shadow: 0 0 10px var(--bubble-color), 0 0 20px rgba(255, 255, 255, 0.8); }
+    }
+    .container {
+      background: linear-gradient(145deg, rgba(13, 27, 42, 0.95), rgba(27, 38, 59, 0.95));
+      border: 2px solid transparent;
+      border-image: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta)) 1;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 212, 255, 0.1);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .container:hover {
+      transform: scale(1.02);
+    }
+    .logo {
+      animation: glow 2s ease-in-out infinite;
+    }
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 10px var(--neon-cyan)); }
+      50% { filter: drop-shadow(0 0 20px var(--neon-magenta)); }
+    }
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .input-group input {
+      width: 100%;
+      background: rgba(245, 247, 250, 0.05);
+      border: 1px solid rgba(245, 247, 250, 0.3);
+      padding: 12px 40px 12px 16px;
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    .input-group input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      outline: none;
+    }
+    .input-group label {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      color: rgba(245, 247, 250, 0.7);
+      font-size: 0.95rem;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+      top: -8px;
+      left: 12px;
+      font-size: 0.75rem;
+      background: var(--bg-dark);
+      padding: 0 6px;
+      color: var(--neon-cyan);
+    }
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(245, 247, 250, 0.7);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .password-toggle:hover {
+      color: var(--neon-cyan);
+    }
+    .login-btn {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.5);
+    }
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    .login-btn:hover::before {
+      left: 100%;
+    }
+    .forgot-password {
+      color: rgba(245, 247, 250, 0.7);
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+    .forgot-password:hover {
+      color: var(--neon-cyan);
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: none;
+      border: 1px solid var(--neon-cyan);
+      background: rgba(13, 27, 42, 0.95);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      animation: slideInRight 0.5s ease-in-out;
+    }
+    .notification.success {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.5);
+    }
+    .notification.error {
+      border-color: var(--neon-magenta);
+      box-shadow: 0 5px 15px rgba(255, 0, 122, 0.5);
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .loading-spinner {
+      display: none;
+      border: 3px solid rgba(245, 247, 250, 0.3);
+      border-top: 3px solid var(--neon-cyan);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+    }
+    .control-btn {
+      background: rgba(245, 247, 250, 0.1);
+      border: 1px solid rgba(245, 247, 250, 0.3);
+      border-radius: 50%;
+      padding: 8px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .control-btn:hover {
+      background: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+      color: var(--bg-dark);
+    }
+    .control-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-dark);
+      color: var(--text-light);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .control-btn:hover::after {
+      opacity: 1;
+    }
+    .fingerprint {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--neon-cyan) 10%, transparent 70%);
+      border-radius: 50%;
+      animation: scan 1.5s ease-in-out;
+      z-index: 10;
+    }
+    @keyframes scan {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+      50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    }
+    body.dark-mode {
+      background: linear-gradient(135deg, #1b263b, #0d1b2a);
+    }
+    body.high-contrast {
+      background: #000;
+      color: #fff;
+      --neon-cyan: #00ffcc;
+      --neon-magenta: #ff66cc;
+      --text-light: #fff;
+    }
+    body.high-contrast .container {
+      background: #111;
+      border-color: #fff;
+    }
+    body.high-contrast input {
+      background: #222;
+      border-color: #fff;
+      color: #fff;
+    }
+    @media (max-width: 640px) {
+      .container { width: 90%; padding: 1.5rem; }
+      .logo { width: 80px; height: 80px; }
+      .title { font-size: 1.5rem; }
+      .notification { top: 12px; right: 12px; padding: 8px 16px; font-size: 0.85rem; }
+      .controls { top: 12px; right: 12px; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="login-container">
+    <img src="https://i.imgur.com/ao0Jo6W.jpeg" alt="Panel Logo" class="logo w-24 h-24 rounded-full border-2 border-[var(--neon-cyan)] mx-auto mb-4">
+    <h1 class="title text-2xl font-bold text-center mb-6">TOOL TREO 30 APP BY NG QUANG HUY V7.9 🌀</h1>
+
+    <div class="input-group">
+      <input id="username" type="text" placeholder=" " aria-label="Tên đăng nhập">
+      <label for="username">Tên đăng nhập</label>
+    </div>
+    <div class="input-group">
+      <input id="password" type="password" placeholder=" " aria-label="Mật khẩu">
+      <label for="password">Mật khẩu</label>
+      <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
+    </div>
+
+    <button id="login-btn" class="login-btn w-full" onclick="login()" aria-label="Đăng nhập">Đăng nhập</button>
+    <div id="loading-spinner" class="loading-spinner mt-4"></div>
+
+    <a href="#" class="forgot-password block text-center mt-4" onclick="showForgotPasswordNotification()">Quên mật khẩu?</a>
+
+    <div class="fingerprint" id="fingerprint"></div>
+
+    <div class="social-links text-center mt-6 text-sm">
+      <span>Created by </span>
+      <a href="https://www.facebook.com/share/1Au4mhxM48/" target="_blank" class="text-[var(--neon-cyan)] hover:text-[var(--neon-magenta)]">Ng Quang Huy</a>
+      <span> | </span>
+      <a href="mailto:ngquanghuy3027@gmail.com" class="text-[var(--neon-cyan)] hover:text-[var(--neon-magenta)]">Liên hệ</a>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-btn" onclick="toggleTheme()" data-tooltip="Chuyển đổi sáng/tối" aria-label="Chuyển đổi giao diện sáng/tối"><i class="fas fa-moon"></i></div>
+    <div class="control-btn" onclick="toggleSound()" data-tooltip="Bật/tắt âm thanh" aria-label="Bật/tắt âm thanh"><i class="fas fa-volume-up"></i></div>
+    <div class="control-btn" onclick="toggleBubbles()" data-tooltip="Bật/tắt bong bóng" aria-label="Bật/tắt bong bóng"><i class="fas fa-star"></i></div>
+    <div class="control-btn" onclick="toggleHighContrast()" data-tooltip="Chế độ tương phản cao" aria-label="Chế độ tương phản cao"><i class="fas fa-adjust"></i></div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2023/03/29/14-44-22-360_2023-03-29-14-44-22-360.mp3" type="audio/mp3">
+  </audio>
+  <audio id="click-sound">
+    <source src="https://www.freesound.org/data/previews/316/316847_5121236-lq.mp3" type="audio/mp3">
+  </audio>
+  <audio id="theme-sound">
+    <source src="https://www.freesound.org/data/previews/316/316848_5121236-lq.mp3" type="audio/mp3">
+  </audio>
+
+  <footer class="fixed bottom-0 w-full bg-[var(--bg-dark)] py-3 text-center text-[var(--text-light)] text-sm opacity-80">
+    2025 Copyright Spam Panel by <span class="text-[var(--accent-gold)] font-bold">Ng Quang Huy</span>
+  </footer>
+
+  <script>
+    let isSoundEnabled = true;
+    let isBubblesEnabled = true;
+    let bubbleInterval;
+    let loginAttempts = 3;
+    let isLocked = false;
+    let isHighContrast = false;
+
+    function showNotification(message, type, duration = 3000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
+      setTimeout(() => notification.style.display = 'none', duration);
+    }
+
+    function showForgotPasswordNotification() {
+      playSound('click-sound');
+      showNotification('Vui lòng inbox admin tại https://www.facebook.com/share/1Au4mhxM48/ để lấy lại mật khẩu!', 'error', 5000);
+    }
+
+    function playSound(soundId) {
+      if (!isSoundEnabled) return;
+      const sound = document.getElementById(soundId);
+      sound.volume = 0.4;
+      sound.currentTime = 0;
+      sound.play().catch(() => console.log('Sound playback blocked'));
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const icon = document.querySelector('.control-btn:nth-child(2) i');
+      icon.classList.toggle('fa-volume-up');
+      icon.classList.toggle('fa-volume-mute');
+      showNotification(isSoundEnabled ? 'Đã bật âm thanh' : 'Đã tắt âm thanh', 'success');
+      playSound('theme-sound');
+    }
+
+    function toggleBubbles() {
+      isBubblesEnabled = !isBubblesEnabled;
+      const icon = document.querySelector('.control-btn:nth-child(3) i');
+      if (isBubblesEnabled) {
+        startBubbles();
+        icon.classList.replace('fa-star-o', 'fa-star');
+        showNotification('Đã bật bong bóng', 'success');
+      } else {
+        clearInterval(bubbleInterval);
+        document.querySelectorAll('.bubble').forEach(b => b.remove());
+        icon.classList.replace('fa-star', 'fa-star-o');
+        showNotification('Đã tắt bong bóng', 'success');
+      }
+      playSound('theme-sound');
+    }
+
+    function createBubble() {
+      if (!isBubblesEnabled) return;
+      const bubbles = document.querySelectorAll('.bubble');
+      if (bubbles.length > 30) return;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      const colors = ['var(--neon-cyan)', 'var(--neon-magenta)', 'var(--accent-gold)', 'var(--bubble-purple)'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      bubble.style.setProperty('--bubble-color', randomColor);
+      bubble.style.setProperty('--random-size', Math.random());
+      bubble.style.setProperty('--random-x', Math.random());
+      bubble.style.setProperty('--random-duration', Math.random());
+      bubble.style.left = Math.random() * window.innerWidth + 'px';
+      document.body.appendChild(bubble);
+      setTimeout(() => bubble.remove(), 12000);
+    }
+
+    function startBubbles() {
+      if (!isBubblesEnabled) return;
+      bubbleInterval = setInterval(createBubble, 800);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.control-btn:nth-child(1) i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      showNotification(document.body.classList.contains('dark-mode') ? 'Chế độ tối' : 'Chế độ sáng', 'success');
+      playSound('theme-sound');
+    }
+
+    function toggleHighContrast() {
+      isHighContrast = !isHighContrast;
+      document.body.classList.toggle('high-contrast');
+      const icon = document.querySelector('.control-btn:nth-child(4) i');
+      icon.classList.toggle('fa-adjust');
+      icon.classList.toggle('fa-circle');
+      showNotification(isHighContrast ? 'Chế độ tương phản cao' : 'Chế độ bình thường', 'success');
+      playSound('theme-sound');
+    }
+
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.querySelector('.password-toggle');
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      toggleIcon.classList.toggle('fa-eye');
+      toggleIcon.classList.toggle('fa-eye-slash');
+      playSound('click-sound');
+    }
+
+    async function login() {
+      if (isLocked) return showNotification('Quá nhiều lần thử, vui lòng đợi!', 'error');
+      playSound('click-sound');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const container = document.getElementById('login-container');
+      const loginBtn = document.getElementById('login-btn');
+      const spinner = document.getElementById('loading-spinner');
+
+      if (!username || !password) {
+        showNotification('Vui lòng nhập đầy đủ thông tin!', 'error');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
+        return;
+      }
+
+      loginBtn.disabled = true;
+      spinner.style.display = 'block';
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      if (username === 'nqh2006' && password === '2006') {
+        document.getElementById('fingerprint').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('fingerprint').style.display = 'none';
+          showNotification('Đăng nhập thành công!', 'success');
+          localStorage.setItem('isLoggedIn', 'true');
+          window.location.href = 'index.html';
+        }, 1500);
+      } else {
+        loginAttempts--;
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
+        if (loginAttempts > 0) {
+          showNotification(`Sai thông tin đăng nhập! Còn ${loginAttempts} lần thử.`, 'error');
+        } else {
+          isLocked = true;
+          showNotification('Quá nhiều lần thử, vui lòng đợi 10 giây!', 'error');
+          setTimeout(() => {
+            isLocked = false;
+            loginAttempts = 3;
+            showNotification('Bạn có thể thử lại!', 'success');
+          }, 10000);
+        }
+      }
+
+      loginBtn.disabled = false;
+      spinner.style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      startBubbles();
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.control-btn:nth-child(1) i').classList.replace('fa-moon', 'fa-sun');
+      }
+      document.getElementById('bg-music').volume = 0.2;
+      document.getElementById('bg-music').play().catch(() => console.log('Autoplay blocked'));
+
+      const container = document.getElementById('login-container');
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const tiltX = (y / rect.height) * 8;
+        const tiltY = -(x / rect.width) * 8;
+        container.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+      });
+      container.addEventListener('mouseleave', () => {
+        container.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+
+      document.getElementById('username').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+      });
+      document.getElementById('password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+      });
+    });
+  </script>
