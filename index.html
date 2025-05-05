@@ -45,11 +45,11 @@
   <meta name="description" content="Spam Panel đa nền tảng cho Zalo, Messenger, Discord, và 30 ứng dụng khác, phát triển bởi Ng Quang Huy.">
   <meta property="og:title" content="Spam Panel by Ng Quang Huy">
   <meta property="og:description" content="Spam Panel đa nền tảng cho Zalo, Messenger, Discord, và nhiều ứng dụng khác, phát triển bởi Ng Quang Huy.">
-  <meta property="og:image" content="https://i.imgur.com/ao0Jo6W.jpeg">
+  <meta property="og:image" content="https://i.imgur.com/gbnmzpI.jpeg">
   <meta property="og:url" content="https://example.com">
   <title>Spam Panel by Ng Quang Huy</title>
-  <link rel="icon" type="image/jpeg" href="https://i.imgur.com/ao0Jo6W.jpeg">
-  <link rel="apple-touch-icon" href="https://i.imgur.com/ao0Jo6W.jpeg">
+  <link rel="icon" type="image/jpeg" href="https://i.imgur.com/gbnmzpI.jpeg">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/gbnmzpI.jpeg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500&family=Patrick+Hand&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -57,7 +57,6 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: url('https://i.imgur.com/k3rvrAu.jpeg') no-repeat center center fixed;
-      background-size: cover;
       background-size: cover;
       min-height: 100vh;
       color: #fff;
@@ -438,7 +437,7 @@
   <div class="overlay"></div>
 
   <div id="login-container">
-    <img src="https://i.imgur.com/ao0Jo6W.jpeg" alt="Panel Logo" class="logo w-24 h-24 rounded-full border-2 border-[#00b7eb] mx-auto mb-4">
+    <img src="https://i.imgur.com/gbnmzpI.jpeg" alt="Panel Logo" class="logo w-24 h-24 rounded-full border-2 border-[#00b7eb] mx-auto mb-4">
     <h1 class="text-2xl font-bold text-center rainbow-text mb-6 font-orbitron">TOOL TREO 30 APP BY NG QUANG HUY V7.9 🌀</h1>
     <div class="input-group">
       <input id="username" type="text" placeholder=" " aria-label="Tên đăng nhập">
@@ -487,6 +486,12 @@
       <div class="sidebar-btn" onclick="selectApp('minecraft')"><i class="fas fa-cube"></i><span class="rainbow-text">Tool Treo Minecraft</span></div>
       <div class="sidebar-btn" onclick="selectApp('gtav')"><i class="fas fa-car"></i><span class="rainbow-text">Tool Treo GTA V</span></div>
       <div class="sidebar-btn" onclick="selectApp('ngl')"><i class="fas fa-question-circle"></i><span class="rainbow-text">Tool Treo NGL</span></div>
+      <div class="sidebar-btn" onclick="selectApp('miniworld')"><i class="fas fa-globe"></i><span class="rainbow-text">Tool Treo Mini World</span></div>
+      <div class="sidebar-btn" onclick="selectApp('yolo')"><i class="fas fa-comment"></i><span class="rainbow-text">Tool Treo YOLO</span></div>
+      <div class="sidebar-btn" onclick="selectApp('shopee')"><i class="fas fa-shopping-cart"></i><span class="rainbow-text">Tool Treo Shopee</span></div>
+      <div class="sidebar-btn" onclick="selectApp('tiki')"><i class="fas fa-store"></i><span class="rainbow-text">Tool Treo Tiki</span></div>
+      <div class="sidebar-btn" onclick="selectApp('lazada')"><i class="fas fa-shopping-bag"></i><span class="rainbow-text">Tool Treo Lazada</span></div>
+      <div class="sidebar-btn" onclick="selectApp('theard')"><i class="fas fa-threads"></i><span class="rainbow-text">Tool Treo Theard</span></div>
     </div>
     <div class="controls">
       <div class="control-btn glassmorphic rounded-full p-3 cursor-pointer transition-colors hover:bg-white/40" onclick="toggleTheme()" data-tooltip="Chuyển đổi sáng/tối" aria-label="Chuyển đổi giao diện sáng/tối">
@@ -506,7 +511,7 @@
       </div>
     </div>
     <div class="container glassmorphic rounded-3xl mx-auto p-8 w-11/12 max-w-6xl my-16 transition-transform hover:scale-105">
-      <img src="https://i.imgur.com/ao0Jo6W.jpeg" alt="Panel Logo" class="logo w-32 h-32 rounded-full border-4 border-white mx-auto mb-6 transition-transform hover:scale-110 hover:rotate-12">
+      <img src="https://i.imgur.com/gbnmzpI.jpeg" alt="Panel Logo" class="logo w-32 h-32 rounded-full border-4 border-white mx-auto mb-6 transition-transform hover:scale-110 hover:rotate-12">
       <h1 class="text-4xl font-bold text-center rainbow-text animate-pulse mb-8">PANEL TREO BY NG QUANG HUY 🌪️</h1>
       <div id="app-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Function cards will be dynamically populated -->
@@ -515,7 +520,7 @@
         <span class="text-gray-200">Created by </span>
         <a href="https://www.facebook.com/share/1Au4mhxM48/" target="_blank" class="text-[#00b7eb] hover:text-[#ff69b4] transition-colors">Ng Quang Huy</a>
         <span class="text-gray-200"> | </span>
-        <a href="mailto:ngquanghuy3027@gmail.com" class="text-[#00b7eb] hover:text-[#ff69b4] transition-colors">Liên hệ</a>
+        <a href="mailto:ngquanghuy3027@gmail.com" class="text-[#00b7eb] hover:text-[#ff69b4]">Liên hệ</a>
       </div>
     </div>
     <div id="function-modal" class="modal">
@@ -623,7 +628,13 @@
       freefire: { name: 'Free Fire', icon: 'fas fa-fire', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
       minecraft: { name: 'Minecraft', icon: 'fas fa-cube', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
       gtav: { name: 'GTA V', icon: 'fas fa-car', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
-      ngl: { name: 'NGL', icon: 'fas fa-question-circle', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' }
+      ngl: { name: 'NGL', icon: 'fas fa-question-circle', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      miniworld: { name: 'Mini World', icon: 'fas fa-globe', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      yolo: { name: 'YOLO', icon: 'fas fa-comment', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' },
+      shopee: { name: 'Shopee', icon: 'fas fa-shopping-cart', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      tiki: { name: 'Tiki', icon: 'fas fa-store', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      lazada: { name: 'Lazada', icon: 'fas fa-shopping-bag', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Cookie' },
+      theard: { name: 'Theard', icon: 'fas fa-threads', functions: ['Treo Ngôn', 'Treo Nhây', 'Treo Sớ', 'Treo Top', 'Treo Top Ảnh'], credential: 'Token' }
     };
 
     let isMusicEnabled = true;
